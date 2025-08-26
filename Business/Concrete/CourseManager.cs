@@ -1,52 +1,56 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
-using DataAccess.Concrete.InMemory;
 using Entities.Concrete;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Entities.DTOs;
 
 namespace Business.Concrete
 {
     public class CourseManager : ICourseService
     {
-        ICourseDal _courseDal;
+        private readonly ICourseDal _courseDal;
         public CourseManager(ICourseDal courseDal)
         {
             _courseDal = courseDal;
         }
-
-        public void Add(Course course)
+        public IResult Add(Course course)
         {
-            if(course.CourseName.Length < 2)
+            if (course.CourseName.Length < 2)
             {
-                Console.WriteLine("Kurs ismi minimum 2 karakter olmalıdır.");
-                return;
-            }else if (course.Price < 0)
-            {
-                Console.WriteLine("Kurs fiyatı 0'dan büyük olmalıdır.");
-                return;
+                return new ErrorResult(Messages.CourseNameInvalid);
             }
             _courseDal.Add(course);
-            Console.WriteLine("Kurs Eklendi: " + course.CourseName);
+            return new SuccessResult(Messages.CourseAdded);
 
         }
-
-        public List<Course> GetAll()
+        public IDataResult<List<Course>> GetAll()
         {
-            return _courseDal.GetAll();
+            if (DateTime.Now.Hour == 22)
+            {
+                return new ErrorDataResult<List<Course>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<Course>>(_courseDal.GetAll(), Messages.CoursesListed);
         }
-        
-        public List<Course> GetAllByCategoryId(int id)
+        public IDataResult<List<Course>> GetAllByCategoryId(int categoryId)
         {
-            return _courseDal.GetAll(c => c.CategoryId == id);
+            return new SuccessDataResult<List<Course>>(_courseDal.GetAll(c => c.CategoryId == categoryId));
         }
-
-        public List<Course> GetByPrice(decimal min, decimal max)
+        public IDataResult<Course> GetById(int id)
         {
-            return _courseDal.GetAll(c => c.Price >= min && c.Price <= max);
+            return new SuccessDataResult<Course>(_courseDal.Get(c => c.CourseId == id));
+        }
+        public IDataResult<List<Course>> GetByPrice(decimal min, decimal max)
+        {
+            return new SuccessDataResult<List<Course>>(_courseDal.GetAll(c => c.Price >= min && c.Price <= max));
+        }
+        public IDataResult<List<CourseDetailDto>> GetCourseDetails()
+        {
+            if (DateTime.Now.Hour == 13)
+            {
+                return new ErrorDataResult<List<CourseDetailDto>>(Messages.MaintenanceTime);
+            }
+            return new SuccessDataResult<List<CourseDetailDto>>(_courseDal.GetCourseDetails());
         }
     }
 }
