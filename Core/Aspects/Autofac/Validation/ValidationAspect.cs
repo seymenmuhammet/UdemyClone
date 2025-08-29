@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Core.Aspects.Autofac.Validation
 {
-    //gg
+    //tests
     public class ValidationAspect : MethodInterception
     {
         private Type _validatorType;
