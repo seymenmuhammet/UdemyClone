@@ -1,28 +1,36 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 
 namespace Business.Concrete
 {
     public class CourseManager : ICourseService
     {
         private readonly ICourseDal _courseDal;
-        public CourseManager(ICourseDal courseDal)
+        private readonly ICategoryService _categoryService;
+        public CourseManager(ICourseDal courseDal, ICategoryService categoryService)
         {
             _courseDal = courseDal;
+            _categoryService = categoryService;
         }
+
         public IResult Add(Course course)
         {
-            if (course.CourseName.Length < 2)
+            IResult? result = BusinessRules.Run(CheckIfCourseNameExists(course.CourseName), CheckIfCategoryLimitExceded());
+            if (result != null)
             {
-                return new ErrorResult(Messages.CourseNameInvalid);
+                return result;
             }
             _courseDal.Add(course);
             return new SuccessResult(Messages.CourseAdded);
-
         }
         public IDataResult<List<Course>> GetAll()
         {
@@ -51,6 +59,24 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<CourseDetailDto>>(Messages.MaintenanceTime);
             }
             return new SuccessDataResult<List<CourseDetailDto>>(_courseDal.GetCourseDetails());
+        }
+        private IResult CheckIfCourseNameExists(string courseName)
+        {
+            var result = _courseDal.GetAll(c => c.CourseName == courseName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.CourseNameAlreadyExists);
+            }
+            return new SuccessResult();
+        }
+        private IResult CheckIfCategoryLimitExceded()
+        {
+            var result = _categoryService.GetAll();
+            if (result.Data.Count > 8)
+            {
+                return new ErrorResult(Messages.CategoryLimitExceded);
+            }
+            return new SuccessResult();
         }
     }
 }

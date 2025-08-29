@@ -18,6 +18,16 @@ namespace Business.Concrete
             _instructorDal = instructorDal;
         }
 
+        public IResult Add(Instructor instructor)
+        {
+            if ((instructor.User.FirstName + instructor.User.LastName).Length < 2)
+            {
+                return new ErrorResult("Eğitmen ismi en az 2 karakter olmalı");
+            }
+            _instructorDal.Add(instructor);
+            return new SuccessResult("Eğitmen eklendi");
+        }
+
         public IDataResult<List<Instructor>> GetAll()
         {
             return new SuccessDataResult<List<Instructor>>(_instructorDal.GetAll(), "Eğitmenler listelendi");

@@ -34,22 +34,22 @@ class Program
         }
     }
 
-    private static void CourseTest()
-    {
-        CourseManager courseManager = new CourseManager(new EfCourseDal());
-        var result = courseManager.GetCourseDetails();
-        if (result.Success)
-        {
-            foreach (var course in result.Data)
-            {
-                Console.WriteLine(course.CourseName + "/" + course.CategoryName + "/" + course.InstructorName +"/" + course.Price );
-            }
-        }
-        else
-        {
-            Console.WriteLine(result.Message);
-        }        
-    }
+    //private static void CourseTest()
+    //{
+    //    CourseManager courseManager = new CourseManager(new EfCourseDal(),new);
+    //    var result = courseManager.GetCourseDetails();
+    //    if (result.Success)
+    //    {
+    //        foreach (var course in result.Data)
+    //        {
+    //            Console.WriteLine(course.CourseName + "/" + course.CategoryName + "/" + course.InstructorName +"/" + course.Price );
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Console.WriteLine(result.Message);
+    //    }        
+    //}
     private static void EnrollmentTest()
     {
         EnrollmentManager enrollmentManager = new EnrollmentManager(new EfEnrollmentDal());

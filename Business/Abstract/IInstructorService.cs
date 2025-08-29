@@ -12,5 +12,6 @@ namespace Business.Abstract
     {
         IDataResult<List<Instructor>> GetAll();
         IDataResult<Instructor> GetById(int id);
+        IResult Add(Instructor instructor);
     }
 }
