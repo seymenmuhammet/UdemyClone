@@ -14,5 +14,6 @@ namespace Business.Constants
         public static string MaintenanceTime = "Sistem Bakımda";
         public static string CourseNameAlreadyExists = "Kurs adı zaten mevcut";
         public static string CategoryLimitExceded = "Kategori limiti aşıldığı için yeni kurs eklenemiyor";
+        public static string AuthorizationDenied = "Yetkiniz yok";
     }
 }

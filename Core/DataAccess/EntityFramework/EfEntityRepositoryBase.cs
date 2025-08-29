@@ -34,7 +34,7 @@ namespace Core.DataAccess.EntityFramework
         {
             using (TContext context = new TContext())
             {
-                var entity = context.Set<TEntity>().SingleOrDefault(filter);
+                var entity = context.Set<TEntity>().FirstOrDefault(filter);
                 if (entity is null)
                     throw new InvalidOperationException();
                 return entity;
